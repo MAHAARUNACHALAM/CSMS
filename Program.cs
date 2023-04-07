@@ -1,0 +1,305 @@
+﻿/*
+College sports management system using c#.net
+
+PROJECT DESCRIPTION: The College Sports Management System’s objective is to provide a which manages the activity of many sports at a time. It also manages the registration process and announcement of the results.
+
+
+Modules
+
+Add sports
+We can add new sports into the system so that we are able to retrieve them later during the registration process. The sports added would be viewed during the creation of a new intra- college or university tournament.
+
+Add Scoreboard
+We add a scoreboard so that the students can view it and the results of each match are announced here so that there will be only one platform for the results. This would reduce the chaos during the score announcement.
+
+
+
+Add Tournament
+
+Each tournament from an intra-college or a university can be added here. It later would help in the registration of any sports in that tournament. While adding a new tournament the system would show the set of sports that are entered into the system by the director of the sports so only those sports can be included in the tournament while creation.
+
+Remove Sports
+
+This module will help in the removal of any sports that the sports director thinks are not needed in the system. The removed sports would not be shown anywhere in the system that includes during the addition of a new tournament.
+
+Edit Scoreboard
+
+The added scoreboards would be updated here. This module helps in updating the scores on the scoreboard. Only the scoreboard which is added using the add scoreboard module would be present here and only these scoreboards can be updated. We won’t be able to add a new scoreboard here.
+Remove players
+
+This module would remove each player after each round of the tournament.So that only the existing player will be present and the one that is not qualified for the next round would be removed using this module.This would give a clear picture of the qualified players. As well as the player from the college team I can also be removed.
+
+Remove Tournament
+
+After each tournament in the college or a university, we should remove it, so that there won’t be any confusion between different tournaments which are going to be held later on. This module would help in removing all the details of the deleted tournament.
+
+
+
+<Optional if time permits>
+
+
+
+Registration Individual
+
+This module would help in the registration of individual sports events held in the tournament. We selected the tournament in which we want to be part and the sports in which we want to participate in and the player would add his name and the required details asked in the registration form. After all these processes then we can click on the submit button and the student has registered for the tournament that they wish to participate in.
+
+Registration Group
+
+This module would help in the registration of group sports events held in the tournament. We selected the tournament in which we want to be part and the sports in which we want to participate in and the set of player’s names would be added and the other required details asked for in the registration form. After all these processes then we can click on the submit button and the student has registered for the tournament that they wish to participate in.
+
+Payment
+
+This module would help to book. So that the students wouldn’t have to stand in a queue or have hard cash in hand in order to do any payment to the sports department. By using this module we are reducing a lot of paperwork and we are giving the students the liberty of doing the payment from wherever they are.
+
+This College Sports Resource Booking Project is related to the College Sports Management System Project*/
+using System.Data.SqlClient;
+
+namespace CSMS
+{
+    class Sports
+    {
+        //has SportsId and SportsName
+        public int SportsId { get; set; }
+        public string SportsName { get; set; }
+
+    }
+    class Tournament
+    {
+        //Has TournamentId,TornamentName,SportsId,Type(Inter/University)
+        public int TournamentId { get; set; }
+        public string TournamentName { get;set; }
+        public string Type { get; set; }
+        public int SportsId { get;  set; }
+        
+    }
+    class Fixtures
+    {
+        //Has FixtureId,TournamentId,Team1Id,Team2Id,Time
+        public int FixturesId { get;  set; }
+        public int TournamentId { get;  set; }
+        public int Team1Id { get;  set; }
+        public int Team2Id { get;  set; }
+        public string Time { get;  set; }
+        }
+    class Scoreboard
+    {
+        //Has FixtureId,Team1Score,Team2Score,Winner
+        public int ScoreboardId { get;  set; }
+        public float Team1Score { get; set; }
+        public float Team2Score { get; set;}
+        public string Winner { get; set; }
+    }
+    class Players
+    {
+        //Has list of names in a string,college name,register number,type,group head,conatctnumber,TeamId which is autogenerated unique id of length 5
+        public int PlayersId { get;  set; }
+        public string PlayersName { get;  set; }
+
+        public string CollegeName { get;  set; }
+        public int RegisterNumber { get;  set; }
+
+        public int PlayersType { get;  set; }
+        public int GroupHead { get;  set; }
+        public int ContactNumber { get;  set; }
+
+        public int SportsId { get; set; }
+
+
+    }
+    class Program
+    {
+        //Writing function addsports to add sports into the database which 2 parameter sports object and sql connection object
+        public static void AddSports(Sports sports, SqlConnection con)
+        {
+            //Creating a sql command
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = con;
+            //Inserting the sports object into the database
+            cmd.CommandText = "insert into Sports values(" + sports.SportsId + ",'" + sports.SportsName + "')";
+            cmd.ExecuteNonQuery();
+            Console.WriteLine("Sports Added");
+        }
+        //Writing function addtournament to add tournament into the database which 2 parameter tournament object and sql connection object
+        public static void AddTournament(Tournament tournament, SqlConnection con)
+        {
+            //Creating a sql command
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = con;
+            //Inserting the tournament object into the database
+            cmd.CommandText = "insert into Tournament values(" + tournament.TournamentId + ",'" + tournament.TournamentName + "','" + tournament.SportsId + "'," + tournament.Type + ")";
+            cmd.ExecuteNonQuery();
+            Console.WriteLine("Tournament Added");
+        }
+        //Writing function remove sports to remove sports from the database which 2 parameter sports object and sql connection object
+        public static void RemoveSports(Sports sports, SqlConnection con)
+        {
+            //Creating a sql command
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = con;
+            //Deleting the sports object from the database
+            cmd.CommandText = "delete from Sports where SportsId=" + sports.SportsId + "";
+            cmd.ExecuteNonQuery();
+            Console.WriteLine("Sports Removed");
+        }
+        //Writing function remove tournament to remove tournament from the database which 2 parameter tournament object and sql connection object
+        public static void RemoveTournament(Tournament tournament, SqlConnection con)
+        {
+            //Creating a sql command
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = con;
+            //Deleting the tournament object from the database
+            cmd.CommandText = "delete from Tournament where TournamentId=" + tournament.TournamentId + "";
+            cmd.ExecuteNonQuery();
+            Console.WriteLine("Tournament Removed");
+        }
+        //Writing function EditScoreboard to create or edit scoreboard from the database which 2 parameter scoreboard object and sql connection object
+        public static void EditScoreboard(Scoreboard scoreboard, SqlConnection con)
+        {
+            //Creating a sql command
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = con;
+            //Checking if the scoreboard object is present in the database
+            cmd.CommandText = "select * from Scoreboard where ScoreboardId=" + scoreboard.ScoreboardId + "";
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.HasRows)
+            {
+                //Updating the scoreboard object in the database
+                cmd.CommandText = "update Scoreboard set Team1Score=" + scoreboard.Team1Score + ",Team2Score=" + scoreboard.Team2Score + ",Winner='" + scoreboard.Winner +  "";
+                cmd.ExecuteNonQuery();
+                Console.WriteLine("Scoreboard Updated");
+            }
+            else
+            {
+                //Inserting the scoreboard object into the database
+                cmd.CommandText = "insert into Scoreboard values(" + scoreboard.ScoreboardId + "," + scoreboard.Team1Score + "," + scoreboard.Team2Score + ",'" + scoreboard.Winner + "')";
+                cmd.ExecuteNonQuery();
+                Console.WriteLine("Scoreboard Created");
+            }
+        }
+        static int GenerateId()
+        {
+            //Generating a random number of length 5
+            Random random = new Random();
+            int num = random.Next(10000, 99999);
+            return num;
+        }
+
+        static void Main(string[] args)
+        {
+            //Creating a Sql Connection
+            SqlConnection con = new SqlConnection();
+            con.ConnectionString = "Data Source=DESKTOP-8D7OITT;Initial Catalog=CSMS;Integrated Security=True";
+            con.Open();
+            Console.WriteLine("Connection Opened");
+            Sports sports = new Sports();
+
+            //Creating user choice for the menu to be displayed 1.)add sports 2.)add scoreboard 3.)add tournament 4.)remove sports 5.)edit scoreboard 6.)remove players 7.)remove tournament 8.)registration individual 9.)registration group 10.)payment
+            //Displaying the option
+            Console.WriteLine("1.)Add sports(enabled)");
+            Console.WriteLine("2.)add scoreboard");
+            Console.WriteLine("3.)add tournament(enabled)");
+            Console.WriteLine("4.)remove sports(enabled)");
+            Console.WriteLine("5.)edit scoreboard(enabled)");
+            Console.WriteLine("6.)remove players(enabled)");
+            Console.WriteLine("7.)remove tournament(enabled)");
+            Console.WriteLine("8.)registration individual");
+            Console.WriteLine("9.)registration group");
+            Console.WriteLine("10.)payment");
+            Console.WriteLine("Enter your choice");
+            int choice = Convert.ToInt32(Console.ReadLine());
+            switch (choice)
+            {
+                case 1:
+                    //Adding sports
+                    Console.WriteLine("Enter the sports id");
+                    sports.SportsId = Convert.ToInt32(Console.ReadLine());
+                    Console.WriteLine("Enter the sports name");
+                    sports.SportsName = Console.ReadLine();
+                    //Calling the add sports method passing the sports object and the connection object 
+                    AddSports(sports, con);
+                    break;
+                case 2:
+                    //Adding scoreboard
+                    break;
+                case 3:
+                    //Adding tournament
+                    Tournament tournament = new Tournament();
+                    Console.WriteLine("Enter the tournament id");
+                    tournament.TournamentId = Convert.ToInt32(Console.ReadLine());
+                    Console.WriteLine("Enter the tournament name");
+                    tournament.TournamentName = Console.ReadLine();
+                    Console.WriteLine("Enter the type of tournament");
+                    tournament.Type = Console.ReadLine();
+                    Console.WriteLine("Enter the sports id");
+                    tournament.SportsId = Convert.ToInt32(Console.ReadLine());
+                    //Calling function addtournament to add tournament into the database which 2 parameter tournament object and sql connection object
+                    AddTournament(tournament, con);
+                    break;
+                case 4:
+                    //Removing sports
+                    Sports sports1 = new Sports();
+                    Console.WriteLine("Enter the sports id");
+                    sports1.SportsId = Convert.ToInt32(Console.ReadLine());
+                    //Calling the remove Sports method passing the sports object and the connection object
+                    RemoveSports(sports1, con);
+                    break;
+                case 5:
+                    //Editing scoreboard
+                    Scoreboard scoreboard = new Scoreboard();
+                    Console.WriteLine("Enter the scoreboard id");
+                    scoreboard.ScoreboardId = Convert.ToInt32(Console.ReadLine());
+                    Console.WriteLine("Enter the team 1 score");
+                    scoreboard.Team1Score = Convert.ToInt32(Console.ReadLine());
+                    Console.WriteLine("Enter the team 2 score");
+                    scoreboard.Team2Score = Convert.ToInt32(Console.ReadLine());
+                    Console.WriteLine("Enter the winner");
+                    scoreboard.Winner = Console.ReadLine();
+                    //Calling function editScoreboard to edit scoreboard into the database which 2 parameter scoreboard object and sql connection object
+                    EditScoreboard(scoreboard, con);
+                    break;
+                case 6:
+                    //Removing players
+
+                    break;
+                case 7:
+                    //Removing tournament
+                    Tournament tournament1 = new Tournament();
+                    Console.WriteLine("Enter the tournament id");
+                    tournament1.TournamentId = Convert.ToInt32(Console.ReadLine());
+                    
+                    //Calling function RemoveTournament to remove tournament from the database which 2 parameter tournament object and sql connection object
+                    RemoveTournament(tournament1, con);
+                    break;
+                case 8:
+                    //Registration individual
+                    //Calling generate id function to generate id for the player
+                    int id = GenerateId();
+                    Players players = new Players();
+                    Console.WriteLine("Enter the player name");
+                    players.PlayersName = Console.ReadLine();
+                    Console.WriteLine("enter the College Name");
+                    players.CollegeName = Console.ReadLine();
+                    Console.WriteLine("Enter the registration number");
+                    players.RegisterNumber =Convert.ToInt32(Console.ReadLine());
+                    Console.WriteLine("Enter the sports id");
+                    players.SportsId = Convert.ToInt32(Console.ReadLine());
+
+                    break;
+                case 9:
+                    //Registration group
+                    break;
+                case 10:
+                    //Payment
+                    break;
+                default:
+                    Console.WriteLine("Invalid choice");
+                    break;
+            }
+
+            
+        }
+    }
+
+    
+}
+
